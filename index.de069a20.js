@@ -1,0 +1,2 @@
+!function(){fetch("https://restcountries.com/v3.1/name/ukraine?fields=name,flags,capital,population,languages").then((function(e){return e.json()})).then((function(e){console.log(e)})).catch((function(e){e.response&&404===e.response.status?Notiflix.Notify.failure("Oops, there is no country with that name"):Notiflix.Notify.failure("Something went wrong. Please try again later.")}));document.querySelector("#search-box"),document.querySelector(".countries-list")}();
+//# sourceMappingURL=index.de069a20.js.map

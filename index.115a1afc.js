@@ -1,0 +1,2 @@
+fetch("https://restcountries.com/v3.1/name/ukraine?fields=name,flags,capital,population,languages").then((e=>e.json())).then((e=>{console.log(e)})).catch((e=>{e.response&&404===e.response.status?Notiflix.Notify.failure("Oops, there is no country with that name"):Notiflix.Notify.failure("Something went wrong. Please try again later.")}));document.querySelector("#search-box"),document.querySelector(".countries-list");
+//# sourceMappingURL=index.115a1afc.js.map
