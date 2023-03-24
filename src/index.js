@@ -1,47 +1,37 @@
 import './css/styles.css';
+import debounce from 'lodash.debounce';
+import Notiflix from 'notiflix/build/notiflix-notify-aio';
 
 function fetchCountries(name) {
-  const url =
-    'https://restcountries.com/v3.1/name/ukraine?fields=name,flags,capital,population,languages';
-  return fetch(url)
-    .then(response => {
-      return response.json();
-    })
-    .then(country => {
-      console.log(country);
-    })
-    .catch(error => {
-      if (error.response && error.response.status === 404) {
-        Notiflix.Notify.failure('Oops, there is no country with that name');
-      } else {
-        Notiflix.Notify.failure(
-          'Something went wrong. Please try again later.'
-        );
-      }
-    });
+  const START_URL = 'https://restcountries.com/v3.1/name';
+  const FILTER_OPTION = '?fields=name,capital,population,flags,languages';
+  const url = `${START_URL}/${name}${FILTER_OPTION}`;
+  return fetch(url).then(response => {
+    if (!response.ok) {
+      throw new Error(response.status);
+    }
+    return response.json();
+  });
 }
-fetchCountries();
-
-// // const DEBOUNCE_DELAY = 300;
 
 const searchBox = document.querySelector('#search-box');
-const countriesList = document.querySelector('.countries-list');
+const countriesList = document.querySelector('.country-list');
 
-const showCountries = country => {
-  if (country.length === 0) {
+const showCountries = countries => {
+  if (countries.length === 0) {
     countriesList.innerHTML = '';
     return;
   }
 
-  if (country.length > 10) {
+  if (countries.length > 10) {
     Notiflix.Notify.info(
       'Too many matches found. Please enter a more specific name.'
     );
-    countryList.innerHTML = '';
+    countriesList.innerHTML = '';
     return;
   }
 
-  if (country.length >= 2 && country.length <= 10) {
+  if (countries.length >= 2 && countries.length <= 10) {
     const countriesHtml = countries
       .map(
         country => `
@@ -56,8 +46,8 @@ const showCountries = country => {
     return;
   }
 
-  if (country.length === 1) {
-    const country = country[0];
+  if (countries.length === 1) {
+    const country = countries[0];
     const countryHtml = `
             <div>
               <img src="${country.flags.svg}" alt="${
@@ -80,4 +70,21 @@ const searchCountries = () => {
     countriesList.innerHTML = '';
     return;
   }
+
+  fetchCountries(name)
+    .then(countries => {
+      showCountries(countries);
+    })
+    .catch(error => {
+      countriesList.innerHTML = '';
+      if (error == 'Error: 404') {
+        Notiflix.Notify.failure(`Oops, there is no country with that name`);
+      } else {
+        Notiflix.Notify.failure(
+          `Something went wrong. Please try again later.`
+        );
+      }
+    });
 };
+
+searchBox.addEventListener('input', debounce(searchCountries), 500);
